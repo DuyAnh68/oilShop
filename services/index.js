@@ -1,1 +1,1 @@
-console.log("Services");
+module.exports.productService = require("./product.service");

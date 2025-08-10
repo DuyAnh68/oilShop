@@ -1,0 +1,49 @@
+const httpStatus = require("http-status");
+const catchAsync = require("../utils/catchAsync");
+const pick = require("../utils/pick");
+const ApiError = require("../utils/ApiError");
+const { productService } = require("../services");
+
+const createProduct = catchAsync(async (req, res) => {
+  const product = await productService.createProduct(req.body);
+  res.status(httpStatus.default.CREATED).send({
+    status: "success",
+    data: product,
+  });
+});
+
+const getProducts = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ["brand"]);
+  const options = pick(req.query, ["sortBy", "limit", "page"]);
+  const result = await productService.getProducts(filter, options);
+  res.send(result);
+});
+
+const getProduct = catchAsync(async (req, res) => {
+  const product = await productService.getProductById(req.params.productId);
+  if (!product) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
+  }
+  res.send(product);
+});
+
+const updateProduct = catchAsync(async (req, res) => {
+  const product = await productService.updateProductById(
+    req.params.productId,
+    req.body
+  );
+  res.send(product);
+});
+
+const deleteProduct = catchAsync(async (req, res) => {
+  await productService.deleteProductById(req.params.productId);
+  res.status(httpStatus.default.OK).send();
+});
+
+module.exports = {
+  createProduct,
+  getProduct,
+  getProducts,
+  updateProduct,
+  deleteProduct,
+};

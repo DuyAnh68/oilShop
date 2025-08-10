@@ -1,1 +1,1 @@
-console.log("models");
+module.exports.Product = require("./product.model");
